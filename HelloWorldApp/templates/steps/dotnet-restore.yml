@@ -1,0 +1,8 @@
+steps:
+  - task: UseDotNet@2
+    inputs:
+      packageType: 'sdk'
+      version: '8.x'
+
+  - script: dotnet restore HelloWorldApp/HelloWorldApp.csproj
+    displayName: Restore Packages

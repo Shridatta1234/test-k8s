@@ -1,0 +1,6 @@
+parameters:
+  buildConfiguration: 'Release'
+
+steps:
+  - script: dotnet build HelloWorldApp/HelloWorldApp.csproj --configuration ${{ parameters.buildConfiguration }} --no-restore
+    displayName: Build Solution

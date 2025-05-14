@@ -1,0 +1,19 @@
+parameters:
+  environment: 'production'
+  buildConfiguration: 'Release'
+
+jobs:
+  - deployment: DeployToEnvironment
+    displayName: Deploy to ${{ parameters.environment }}
+    environment: ${{ parameters.environment }}
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - checkout: self
+
+            - task: AzureWebApp@1
+              inputs:
+                azureSubscription: 3655b6ad-0a6f-4700-9954-d0323dfae5f1
+                appName: helloworld321
+                package: '$(System.DefaultWorkingDirectory)/**/*.zip'

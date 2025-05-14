@@ -1,0 +1,11 @@
+parameters:
+  buildConfiguration: 'Release'
+
+steps:
+  - script: dotnet publish HelloWorldApp/HelloWorldApp.csproj --configuration ${{ parameters.buildConfiguration }} --output $(Build.ArtifactStagingDirectory)
+    displayName: Publish Artifacts
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathToPublish: '$(Build.ArtifactStagingDirectory)'
+      artifactName: 'drop'

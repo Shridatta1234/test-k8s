@@ -1,0 +1,20 @@
+parameters:
+  buildConfiguration: 'Release'
+
+jobs:
+  - job: BuildApp
+    displayName: Build .NET App
+    pool:
+      vmImage: 'windows-latest'
+    steps:
+      - checkout: self
+
+      - template: steps/dotnet-restore.yml
+
+      - template: steps/dotnet-build.yml
+        parameters:
+          buildConfiguration: ${{ parameters.buildConfiguration }}
+
+      - template: steps/dotnet-publish.yml
+        parameters:
+          buildConfiguration: ${{ parameters.buildConfiguration }}
