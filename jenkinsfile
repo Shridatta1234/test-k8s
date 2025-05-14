@@ -27,7 +27,7 @@ pipeline {
         }
         stage('Build Code & Docker Build') {
             steps {
-                sh 'docker build -t $DOCKER_IMAGE HelloWorldApp/.'
+                sh 'docker build -t $DOCKER_IMAGE HelloWordApp/.'
             }
         }
         stage('Docker Login') {
