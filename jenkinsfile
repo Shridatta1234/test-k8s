@@ -1,0 +1,75 @@
+pipeline {
+    environment {
+        // Credentials from Jenkins secrets
+        DOCKER_USER = 'rohit5521'
+        DOCKER_PASS = 'rohit5521'
+        IMAGE = "${DOCKER_USER}/myimage"
+        DOCKER_IMAGE = "${DOCKER_USER}/myimage:${BUILD_TAG}"
+        BUILD_TAG = "${BUILD_NUMBER}"
+        DEPLOYMENT_FILE = "deployment.yaml"
+        
+    }   
+    agent any
+    
+    stages {
+        stage('Git Checkout') {
+            steps {
+                git 'https://github.com/Shridatta1234/test-k8s.git'
+            }
+        }
+
+       stage('Docker Verions') {
+            steps {
+                sh 'docker -v'
+                sh 'docker images'
+                sh 'docker ps -a'
+            }
+        }
+        stage('Build Code & Docker Build') {
+            steps {
+                sh 'docker build -t $DOCKER_IMAGE HelloWorldApp/.'
+            }
+        }
+        stage('Docker Login') {
+            steps {
+                sh 'docker login --username "$DOCKER_USER" --password "$DOCKER_PASS"'
+            }
+        }
+        stage('Docker Push') {
+            steps {
+                sh 'docker push $DOCKER_IMAGE'
+            }
+        }
+        stage('Update Deployment') {
+            steps {
+                script {
+                    // Replace image tag with build ID
+                    sh "sed -i 's|image: .*|image: $IMAGE:${BUILD_TAG}|' deployment.yaml"
+                    
+                    // Verify the change
+                    sh "cat deployment.yaml | grep image:"
+                }
+            }
+        }
+        stage('Kubernetes application Service') {
+            steps {
+                sh 'kubectl --kubeconfig=/etc/kubernetes/admin.conf apply -f service.yaml'
+            }
+        }
+        stage('Validation Test') {
+            steps {
+                sh '''    kubectl --kubeconfig=/etc/kubernetes/admin.conf get pods -o wide
+    kubectl --kubeconfig=/etc/kubernetes/admin.conf get deploy -o wide
+    kubectl --kubeconfig=/etc/kubernetes/admin.conf get ep -o wide
+    kubectl --kubeconfig=/etc/kubernetes/admin.conf get svc -o wide'''
+            }
+        }
+    
+        stage('Remove Old Images') {
+            steps {
+                sh '''chmod 777 Remove-Old-Image.sh
+                        ./Remove-Old-Image.sh'''
+            }
+        }
+    }
+}
