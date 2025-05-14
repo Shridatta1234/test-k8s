@@ -73,4 +73,10 @@ pipeline {
             }
         }
     }
+post {
+        failure {
+            // Trigger second pipeline only if this one fails
+            build job: 'Deployment-Blue', wait: false
+        }
+    }
 }
