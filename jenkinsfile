@@ -48,6 +48,7 @@ pipeline {
                     
                     // Verify the change
                     sh "cat deployment.yaml | grep image:"
+                    sh "kubectl --kubeconfig=/etc/kubernetes/admin.conf apply -f deployment.yaml"
                 }
             }
         }
